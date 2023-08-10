@@ -1,0 +1,74 @@
+.lateral{
+  width: 100vh;
+}
+.accordion{
+  --bs-accordion-bg: rgb(228, 245, 220);
+  --bs-accordion-active-bg:rgb(165, 222, 156);
+}
+
+.containertop{
+  width:100vw !important;
+  background-color:rgb(69, 245, 78) !important;
+}
+
+/*SWFACE*/
+.containersw {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* background-color: black; */
+}
+
+.switch-background {
+  background-color: rgb(32, 72, 49);
+  height: 60px;
+  width: 220px;
+  border-radius: 50px;
+  margin-top: 3em;
+  /* padding-left: 15px;
+  padding-top: 5px; */
+  /* box-shadow: 12px 12px 22px gray, inset 12px 12px 10px #402955; */
+  box-shadow: 5px 5px 35px rgb(69, 245, 78),
+    -5px -5px 35px rgba(176, 235, 195, 0.636);
+  transition: box-shadow 0.5s ease-in;
+}
+.off-shadow {
+  box-shadow: 2px 2px 15px rgb(32, 72, 49),
+    -2px - 2px 15px rgba(22, 56, 4, 0.636);
+}
+.on-shadow {
+  /* visibility: hidden; */
+  box-shadow: 2px 2px 15px rgb(32, 72, 49),
+    -2px -2px 15px rgba(207, 243, 209, 0.468);
+  /* box-shadow: 12px 12px 22px gray, inset 12px 12px 10px #402955; */
+}
+.innerSwitch {
+  /* margin-left: 20px;
+  margin-right: 20px; */
+  background-color: rgb(77, 189, 73);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.face {
+  width: 40px;
+  padding-bottom: px;
+}
+
+
+table.table-bordered{
+  border:3px solid gainsboro;
+  margin-top:20px;
+}
+table.table-bordered > thead > tr > th{
+  border:3px solid gainsboro;
+}
+table.table-bordered > tbody > tr > td{
+  border:3px solid gainsboro;
+}
