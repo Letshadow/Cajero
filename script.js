@@ -1,3 +1,7 @@
+//SE pretende hacer una interfaz para la autenticacion y el manejo de una cuenta de cagero dando una imformacion adicionalpor medio de graficas y tablas
+
+
+
 //Autenticacion Google
 //AIzaSyBzwfUT71gZzBVA7R-Y7Wwg2gt5Npn6mAs
 //ID CLIENTE 1006596615028-9osv2cjqqrkhrk43tcd1si4rm1hfqecq.apps.googleusercontent.com
@@ -8,11 +12,13 @@
 /* exported handleSignoutClick */
 
 // TODO(developer): Set to client ID and API key from the Developer Console
-let Main=document.getElementById("Maindiv");
-Main.style.visibility="hidden";
-let AUser
+
+//HEADER
+//Datos API
 const CLIENT_ID = '1006596615028-9osv2cjqqrkhrk43tcd1si4rm1hfqecq.apps.googleusercontent.com';
 const API_KEY = 'AIzaSyBzwfUT71gZzBVA7R-Y7Wwg2gt5Npn6mAs';
+
+//Datos Sheet
 const SPREADSHEET="1umEoPkQO0HX3mkkpFL63wOk96PRLkGIeCqfROpvQNwo";
 const Hoja = "Usuarios";
 const Rango="!A:H";
@@ -30,12 +36,18 @@ let tokenClient;
 let gapiInited = false;
 let gisInited = false;
 
+//MAIN
+//Aplicativo 
+let Main=document.getElementById("Maindiv");
+Main.style.visibility="hidden";
+let AUser //Usuario actual
+
 //USERS
 let InUser=document.getElementById("InputU1");
 let InPass=document.getElementById("InputU2");
 
 
-//swFAce
+//SWFace
 const eyeOpenL =
 "M60 30C60 46.5685 46.5685 60 30 60C13.4315 60 0 46.5685 0 30C0 13.4315 13.4315 0 30 0C46.5685 0 60 13.4315 60 30Z";
 const eyeOpenR =
@@ -57,16 +69,22 @@ const background = document.querySelector("body");
 let switched = false;
 
 /*Inicializar Variables*/
-
-let SaldoACBTN=document.getElementById("SaldoACBTN");
-let AbonarV=document.getElementById("InputUA2");
-let AboBt=document.getElementById("AboBt");
-let DebitarV=document.getElementById("InputUA3");
-let CategoriaV=document.getElementById("InputUA4");
-let DebBt=document.getElementById("DebBt");
+//Base de datos
 let BDUsuarios;
-let IdC;
-let IdCR;
+let IdC;//Letra-categoria
+let IdCR;//categoria-letra
+let datenow= new Date();//Fecha actual
+let AHis=[
+            {Fecha:new Date().getTime(),valor:1,Categoria:"Disponible"},
+            {Fecha:new Date().getTime(),valor:2,Categoria:"Disponible"},
+            {Fecha:new Date().getTime(),valor:3,Categoria:"Otros"},
+            {Fecha:new Date().getTime(),valor:4,Categoria:"Otros"}
+        ];
+//Accordion
+
+//Saldo
+let SaldoACBTN=document.getElementById("SaldoACBTN");
+//Grafica
 let myCanvas=document.getElementById("myChart");
 let xValues = ["Italy", "France", "Spain", "USA"];
 let yValues = [25, 25, 25, 25];
@@ -80,7 +98,6 @@ const CHART_COLORS = {
     purple: 'rgb(153, 102, 255)',
     grey: 'rgb(201, 203, 207)'
 };
-
 const myChart = new Chart(myCanvas, {
     type: "pie",
     data: {
@@ -100,23 +117,39 @@ const myChart = new Chart(myCanvas, {
     },
 });
 
-let Htable = document.getElementById("Htable");/*Historico*/
-let datenow= new Date();
-let AHis=[
-            {Fecha:new Date().getTime(),valor:1,Categoria:"Disponible"},
-            {Fecha:new Date().getTime(),valor:2,Categoria:"Disponible"},
-            {Fecha:new Date().getTime(),valor:3,Categoria:"Otros"},
-            {Fecha:new Date().getTime(),valor:4,Categoria:"Otros"}
-        ];
+//Abonar
+let AbonarV=document.getElementById("InputUA2");
+let CategoriaV=document.getElementById("InputUA4");
+let AboBt=document.getElementById("AboBt");
+
+//Debitar
+let DebitarV=document.getElementById("InputUA3");
+let DebBt=document.getElementById("DebBt");
+
+//Historico
+let Htable = document.getElementById("Htable");
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//HEADER
 
 /// AUTENTICACION GOOGLE
 
-SignInBt.style.visibility = 'hidden';
-SignOutBt.style.visibility = 'hidden';
+//LOAD
+InicializarAut();
 
-SignInBt.addEventListener("click",handleAuthClick);
-SignOutBt.addEventListener("click",handleSignoutClick);
 
+/*
+Esconde los botones hasta que el api este habilitada 
+les asigna los callbacks
+*/
+function InicializarAut() {
+    SignInBt.style.visibility = 'hidden';
+    SignOutBt.style.visibility = 'hidden';
+
+    SignInBt.addEventListener("click",handleAuthClick);
+    SignOutBt.addEventListener("click",handleSignoutClick);
+}
 
 /**
  * Callback after api.js is loaded.
@@ -160,6 +193,8 @@ function maybeEnableButtons() {
     }
 }
 
+
+//GO
 /**
  *  Sign in the user upon button click.
  */
@@ -170,7 +205,7 @@ function handleAuthClick() {
         }
         document.getElementById('SignOutBt').style.visibility = 'visible';
         document.getElementById('SignInBt').innerText = 'Reload';
-        await listMajors();
+        await listMajors();//Lectura de datos
         Main.style.visibility="visible";
     };
 
@@ -184,6 +219,7 @@ function handleAuthClick() {
     }
 }
 
+//EXIT
 /**
  *  Sign out the user upon button click.
  */
@@ -203,8 +239,10 @@ function handleSignoutClick() {
     }
 }
 
-/**
- * Print the names and majors of students in a sample spreadsheet:
+//BD NUBE sheets
+
+/**Lectura
+ * Print the names and majors of object in a sample spreadsheet:
  * https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
  */
 async function listMajors() {
@@ -230,40 +268,214 @@ async function listMajors() {
         'Usuario, Saldo:\n');
         content.innerText = output;
 
+    //Inicializar variables
     BDUsuarios = {};
     IdC={};
     IdCR={};
-    let NewUser;
+    let NewUser;//Variable auxiliar para usuario en iteracion actual
     
-    range.values.forEach((fila) => {
-        if (fila[0]=="User"){
+    range.values.forEach((fila) => {//leer fila a fila
+        if (fila[0]=="User"){//Obtener Headers y formato de la base de datos
             
-            fila.forEach((col,i)=>{
+            fila.forEach((col,i)=>{//Header a letra
                 IdC[col]=String.fromCharCode(i+65);
-                IdCR[IdC[col]]=col;
+                IdCR[IdC[col]]=col;//inverso
             })
             return; 
         }else{
-            let regex = /([A-ZA]+)|(\d+)/g;
-            NewUser = {};
-            let aux=[];
-            let Historicoaux=[];
-            fila.forEach((col,i)=>{
+            NewUser = {};//Inicializar usuario para iteracion
+            fila.forEach((col,i)=>{//crear json a partir de headers
                 if (i>0) {
                     NewUser[Object.keys(IdC)[i]]=col;
                 }
-            })           
-            fila[2].split(',').forEach((tran,i)=>{                
-                aux=tran.match(regex);
-                Historicoaux.push({Fecha:aux[2],valor:aux[1],Categoria:IdCR[aux[0]]})
             })
-            NewUser[Object.keys(IdC)[2]]=Historicoaux;
-            BDUsuarios[fila[0]]=NewUser;
+            //Historico en string se repite para hacer subjnson
+
+            let regex = /([A-ZA]+)|(\d+)/g;//para tomar palabras en mayusculas y numeros
+            let aux=[];//Variable auxiliar array historico cormateado
+            let Historicoaux=[];//Variable para subjsonhistorico
+            fila[2].split(',').forEach((tran,i)=>{//obtener transacciones en formato {categoria}{valor}@{fecha},...
+                aux=tran.match(regex);//separar en array
+                Historicoaux.push({Fecha:aux[2],valor:aux[1],Categoria:IdCR[aux[0]]})//creacion subjson
+            })
+            NewUser[Object.keys(IdC)[2]]=Historicoaux;//Actualizar string con subjnson
+            BDUsuarios[fila[0]]=NewUser;//agregar usuario a la BD
         }
     });    
 }
 
-async function transaccion(User,...data) {
+/*Escritura
+Funcion para actualizar sheets
+*/
+async function Updatesheet(Columna,rangedata,valordata) {
+    let responsel = await gapi.client.sheets.spreadsheets.values.update({//promesa historico
+        spreadsheetId: SPREADSHEET,
+        range: `${Hoja}!${IdC[Columna]}${rangedata}`,
+        values: [valordata],//Data en doble cochete [[]]
+        valueInputOption: "USER_ENTERED",
+    });  
+    return responsel;
+}
+
+//SWFACE
+face.addEventListener("click", () => {//Logueo usuario
+    AUser=InUser.value;//Usuario actual
+    if (BDUsuarios.hasOwnProperty(AUser)) { //Verificacion User
+        if (BDUsuarios[AUser].Pass==InPass.value) {//Verificacion Pass
+            let tl = anime.timeline({//animacion
+                easing: "easeOutExpo",
+                duration: 1050,
+            });
+            tl.add({//color inicial
+                targets: [face],
+                translateX: switched ? -1 : 160,
+                rotate: switched ? -360 : 360,
+                backgroundColor: switched ? "rgb(77, 189, 73)" : "rgb(176, 235, 195)",//color off
+            },500).add({//color final
+                targets: [switchBG, background],
+                backgroundColor: switched ? "rgb(32, 72, 49)" : "rgb(69, 245, 78)",//color on
+            },500).add({//abrir ojos
+                targets: ".eye-left",
+                d:[{
+                    value: switched ? eyeClosedL : eyeOpenL,
+                }]},"-=1200").add({
+                targets: ".eye-right",
+                d: [{
+                    value: switched ? eyeClosedR : eyeOpenR,
+                }]},"-=1210").add({
+                targets: ".mouth",
+                d: [{
+                    value: switched ? mouthClosed : mouthOpen,
+                }]},"-=1210");
+    
+            if (switched == true) {//ON
+            //if true
+                if (switchBG.classList.contains("on-shadow")) {
+                    switchBG.classList.remove("on-shadow");
+                }
+                switchBG.classList.add("off-shadow");
+                switched = false;
+            } else {//OFF
+                if (switchBG.classList.contains("off-shadow")) {
+                    switchBG.classList.remove("off-shadow");
+                }
+                switchBG.classList.add("on-shadow");
+                switched = true;
+            }
+
+            AUser=InUser.value;//usuario actual
+            AHis=BDUsuarios[AUser].Historico;//historico usuario actual
+            updatedash();//Actualizar dasboard
+            SignInUBt.click();//simular click en SW oculto para efecto collapse
+        } else {
+            alert("Contraseña equivocada")
+        }
+    } else {
+        alert("No existe Usuario")           
+    }
+});
+
+
+
+/*DATA*/
+Inicializartransacciones()
+
+/**
+ * Funcion para agregar callbacks para transacciones
+ */
+
+function Inicializartransacciones(){
+    AboBt.addEventListener("click",abonar);    
+    DebBt.addEventListener("click",debitar);
+}
+function showsaldo(){SaldoACBTN.click()};
+
+
+/**
+ * Funcion para crear div filas 
+ */
+function newitemtr(i,tran){
+    const tranm=monyformat(Number(tran.valor));
+    const itemac= document.createElement("tr");//crear fila
+    //agregar columnas
+    if (tran.Categoria=="Disponible") {//Abono
+        itemac.innerHTML = `
+            <th scope="row">${newformatDate(tran.Fecha)}</th>
+            <td>${tranm}</td>
+            <td></td>
+            <td></td>`;
+    } else {//Debito
+        itemac.innerHTML = `
+            <th scope="row">${newformatDate(tran.Fecha)}</th>
+            <td></td>
+            <td>${tranm}</td>
+            <td>${tran.Categoria}</td>`;
+    }    
+    return itemac;
+}
+
+/**
+* Funcion para actualizar Grafica y tabla resumen del  estado de la cuenta
+*/
+function updatedash() {
+    content.innerHTML = "Saldo Disponible: " + monyformat(Number(BDUsuarios[AUser].Disponible));//Actualizar saldo
+    const valores = Object.values(BDUsuarios[AUser]).slice(3, 7);//Actualizar Valores categorias
+    xValues = Object.keys(BDUsuarios[AUser]).slice(3, 7);//Actualizar Nombres Categorias
+    yValues = valores;
+    barColors = Object.values(CHART_COLORS);//colores
+
+    //Actualizar Titulo
+    myChart.options.title.text=`Ultimos Gastos (Total: ${monyformat(valores.reduce((a, b) => Number(a) + Number(b),0))})`;
+    myChart.update(); 
+    
+    //Actualizar Ejes
+    myChart.data.labels=xValues;
+    myChart.data.datasets[0].data=yValues;
+
+    //Actualizar tabla historico
+    Htable.innerHTML="";//Reset historico
+    for (let i = 1; i < AHis.length+1; i++) {
+        Htable.appendChild(newitemtr(i,AHis[i-1]));//Agregar fila
+    }
+}
+
+
+// /**
+//  * Actualizar base de datos en base a abonos y debitos (con funciones) corregir
+//  */
+
+// async function transaccionnube(User,...data) {
+//     let LUsuarios=Object.keys(BDUsuarios);//Lista Usuarios
+//     datenow=new Date();//Fecha actual
+//     var response=[];//promesas
+//     let Historicoaux=""//Inicializar historico
+//     BDUsuarios[User].Historico.forEach((tran)=>{//json a string formato {categoria}{valor}@{fecha},...     
+//         Historicoaux+=`${IdC[tran.Categoria]}${tran.valor}@${tran.Fecha},`
+//     })
+//     Historicoaux=Historicoaux.slice(0, -1);//quitar ultima coma
+//     const filaAEditar =  LUsuarios.indexOf(User) + 2;//Usuaro actual + despues del header   
+//     if (data.length==1){//Abono  DisponibleFinal=DisponibleActual+Abono
+//         const UpdateHistorico =  [`${Historicoaux},${IdC["Disponible"]}${(data-BDUsuarios[User]["Disponible"])}@${datenow.getTime()}`];//Agregar Abono a historico Abono=DisponibleFinal-DisponibleActual
+
+//         //No se pueden editar celdas no contiguas se editan por separado
+//         response.push(await Updatesheet("Disponible",filaAEditar,data));//promesa Disponible
+//     }else{//Debito Disponiblefinal=DisponibleActual-Debito
+//         const retirado=Number(BDUsuarios[User]["Disponible"])-Number(data[1]);//Debito=DisponibleActual-Disponiblefinal
+//         const totcat=retirado+Number(BDUsuarios[User][data[0]]);//TotalCategoria=Debito+CategoriaActual
+//         const UpdateHistorico =  [`${Historicoaux},${IdC[data[0]]}${retirado}@${datenow.getTime()}`];//Agregar Debito a historico
+//         response.push(await Updatesheet("Disponible",filaAEditar,[data[1]]));
+//         response.push(await Updatesheet(IdC[data[0]],filaAEditar,[totcat]));        
+//     }
+//     response.unshift(await Updatesheet("Historico",filaAEditar,UpdateHistorico));//promesa historico
+//     updatedash();
+//     return response;
+// }
+
+// /**
+//  * Actualizar base de datos en base a abonos y debitos
+//  */
+
+async function transaccionnube(User,...data) {
 
     let LUsuarios=Object.keys(BDUsuarios);
     let LAtributos=Object.keys(BDUsuarios[User]);
@@ -325,154 +537,61 @@ async function transaccion(User,...data) {
     updatedash();
 return response;
 }
-
-//swFAce
-face.addEventListener("click", () => {
-    AUser=InUser.value;
-    if (BDUsuarios.hasOwnProperty(AUser)) { 
-        if (BDUsuarios[AUser].Pass==InPass.value) {
-            let tl = anime.timeline({
-                easing: "easeOutExpo",
-                duration: 1050,
-            });
-            tl.add({
-                targets: [face],
-                translateX: switched ? -1 : 160,
-                rotate: switched ? -360 : 360,
-                backgroundColor: switched ? "rgb(77, 189, 73)" : "rgb(176, 235, 195)",
-            },500).add({
-                targets: [switchBG, background],
-                backgroundColor: switched ? "rgb(32, 72, 49)" : "rgb(69, 245, 78)",
-            },500).add({
-                targets: ".eye-left",
-                d:[{
-                    value: switched ? eyeClosedL : eyeOpenL,
-                }]},"-=1200").add({
-                targets: ".eye-right",
-                d: [{
-                    value: switched ? eyeClosedR : eyeOpenR,
-                }]},"-=1210").add({
-                targets: ".mouth",
-                d: [{
-                    value: switched ? mouthClosed : mouthOpen,
-                }]},"-=1210");
-    
-            if (switched == true) {
-            //if true
-                if (switchBG.classList.contains("on-shadow")) {
-                    switchBG.classList.remove("on-shadow");
-                }
-                switchBG.classList.add("off-shadow");
-                switched = false;
-            } else {
-                if (switchBG.classList.contains("off-shadow")) {
-                    switchBG.classList.remove("off-shadow");
-                }
-                switchBG.classList.add("on-shadow");
-                switched = true;
-            }
-            AUser=InUser.value;
-            AHis=BDUsuarios[AUser].Historico;
-            updatedash();           
-            
-            SignInUBt.click();
-
-
-        } else {
-            alert("Contraseña equivocada")
-        }
-        
-    } else {
-        alert("No existe Usuario")           
-    }
-});
-
-
-/*DATA*/
-
-
-AboBt.addEventListener("click",abonar);
-DebBt.addEventListener("click",debitar);
-
-
-function updatedash() {
-    content.innerHTML = "Saldo Disponible: " + BDUsuarios[AUser].Disponible;
-    const valores = Object.values(BDUsuarios[AUser]).slice(3, 7);
-    xValues = Object.keys(BDUsuarios[AUser]).slice(3, 7);
-    yValues = valores;
-    barColors = Object.values(CHART_COLORS);
-    myChart.data.labels=xValues;
-    myChart.data.datasets[0].data=yValues;
-    myChart.options.title.text=`Ultimos Gastos (Total: "
-    ${valores.reduce((a, b) => Number(a) + Number(b),0)})`;
-    myChart.update(); 
-    Htable.innerHTML="";
-    for (let i = 1; i < AHis.length+1; i++) {
-        Htable.appendChild(newitemtr(i,AHis[i-1]));
-    }
-}
-
-function newitemtr(i,tran){
-    const itemac= document.createElement("tr");
-    itemac.setAttribute("class","accordion-item");
-    if (tran.Categoria=="Disponible") {
-        itemac.innerHTML = `
-            <th scope="row">${newformatDate(tran.Fecha)}</th>
-            <td>${tran.valor}</td>
-            <td></td>
-            <td></td>`;
-    } else {
-        itemac.innerHTML = `
-            <th scope="row">${newformatDate(tran.Fecha)}</th>
-            <td></td>
-            <td>${tran.valor}</td>
-            <td>${tran.Categoria}</td>`;
-    }    
-    return itemac;
-}
-
+/**
+ * Funcion para realizar un abono a la cuenta
+ */
 function abonar() {
-    const AAbonar=Number(AbonarV.value)
-    const total=Number(BDUsuarios[AUser].Disponible)+AAbonar;
-    if (total<990) {
-        transaccion(AUser,total);
-        BDUsuarios[AUser].Disponible=total;
+    const AAbonar=Number(AbonarV.value)//Abono
+    const total=Number(BDUsuarios[AUser].Disponible)+AAbonar;//Abono  DisponibleFinal=DisponibleActual+Abono
+
+    if (total<990) {//Verificar maximo de cuenta
+        transaccionnube(AUser,total);//Actualizar BD nube
+        BDUsuarios[AUser].Disponible=total;//Actualizar BD Local
         BDUsuarios[AUser].Historico=[...BDUsuarios[AUser].Historico,{Fecha:datenow.getTime(),valor:AAbonar,Categoria:"Disponible"}];
-        AHis=BDUsuarios[AUser].Historico;
-        updatedash();
-        showsaldo();
+        AHis=BDUsuarios[AUser].Historico;//Actualizar historico actual
+        updatedash();//Actualizar Dashboard
+        showsaldo();//Mostrar cambios
     }else{
         alert("superaste el maximo de tu cuenta")
     }    
 }
 
+/**
+ * Funcion para realizar un debito a la cuenta
+ */
 function debitar() {
-    const ADebitar=Number(DebitarV.value);
-    const total=Number(BDUsuarios[AUser].Disponible)-ADebitar;
-    if (total>10) {
-        const ACategoria=CategoriaV.value;
-        transaccion(AUser,ACategoria,total);
-        BDUsuarios[AUser].Disponible=total;
-        BDUsuarios[AUser][ACategoria]=(Number(BDUsuarios[AUser][ACategoria])+ADebitar)+'';
+    const ADebitar=Number(DebitarV.value);//Debito
+    const total=Number(BDUsuarios[AUser].Disponible)-ADebitar;//Debito Disponiblefinal=DisponibleActual-Debito
+    if (total>10) {//Verificar minimo de cuenta
+        const ACategoria=CategoriaV.value;//Categoria actual
+        transaccionnube(AUser,ACategoria,total);//Actualizar BD nube
+        BDUsuarios[AUser].Disponible=total;//Actualizar BD Local
+        BDUsuarios[AUser][ACategoria]=(Number(BDUsuarios[AUser][ACategoria])+ADebitar)+'';//TotalCategoria=Debito+CategoriaActual
         BDUsuarios[AUser].Historico=[...BDUsuarios[AUser].Historico,{Fecha:datenow.getTime(),valor:ADebitar,Categoria:ACategoria}];
         AHis=BDUsuarios[AUser].Historico;
-        showsaldo();
-        updatedash();        
+        updatedash();//Mostrar cambios 
+        showsaldo();//Actualizar Dashboard            
     }else{
         alert("superaste el minimo de tu cuenta")
     }    
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//Fin codigo
 
-const showsaldo=()=>SaldoACBTN.click();
-
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // utilidades
+/**
+ * Funcion para pasar a minusculas sin tildes ni caracteres especiales
+ */
 function aplanar(str){
     str=str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\w]/gi, '').toLowerCase();
     return str;
 }
 
+/**
+ * Funcion para dar formato dinero 
+ */
 function monyformat(valor){
     return valor.toLocaleString("en", {
         style: "currency",
@@ -481,6 +600,9 @@ function monyformat(valor){
 
 };
 
+/**
+ * Funciones para pasar de fecha a numero
+ */
 function datetonum(mifecha){
     /*
     const diffTime = Math.abs(mifecha - new Date("1900/01/01"));
@@ -489,6 +611,9 @@ function datetonum(mifecha){
     return (mifecha.getTime())
 }
 
+/**
+ * Funciones para pasar de numero a fecha
+ */
 function padTo2Digits(num) {
     return num.toString().padStart(2, '0');
 }
@@ -511,6 +636,9 @@ function newformatDate(date) {
 
 }
 
+/**
+ * Funcion para imprimir valores y pruebas
+ */
 const pru=(s)=>console.log(undefined==s ? "hola" : "hola "+s)
 
 

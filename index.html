@@ -15,26 +15,25 @@
 </head>
 
 <body class="bg-dark">
-
-    <header class="containertop container p-4">
-        <div class="row">
-            <div class="col-10 text-center">
+    <header class="containertop container p-2">
+        <div class="row align-items-center text-center">
+            <div class="col-9">
                 <img src="..\DATA\LOGO.png" width="250" alt="LogDefault">
                 <br>
-                <h4 class="text-center">Doble Verificacion Activada Ingrese a la Plataforma Primero</h4>
+                <h4>Doble Verificacion Activada Ingrese a la Plataforma Primero</h4>
             </div>
             <div class="col-2">
-                <button id="SignInBt" class="btn btn-outline-success w-100 h-2 fs-1">GO</button>
-                <button id="SignOutBt" class="btn btn-outline-danger w-100 h-2 fs-1">Exit</button>
+                <button id="SignInBt" class="btn btn-outline-success w-100 fs-1">GO</button>
+                <button id="SignOutBt" class="btn btn-outline-danger w-100 fs-1">Exit</button>
             </div>
         </div>
     </header>
 
-    <main id="Maindiv" class="d-flex justify-content-center m-4">
+    <main id="Maindiv" class="d-flex justify-content-center aling-item-center sm-4 p-4">
         <div class="row">
             <div class="col-4">
-                <div class="card p-2" style="width: 250px">
-                    <img src="..\DATA\LogIC.png" class="card-img-top" alt="LogDefault">
+                <div class="card p-2" style="width: 300px">
+                    <img src="..\DATA\LogIC.png" class="card-img-top p-2" alt="LogDefault">
                     <div class="card-body">
                         <h5 class="card-title">Usuario</h5>
                         <input class="card-text" id="InputU1" type="text" name=""></input>
@@ -49,7 +48,7 @@
                                 <label class="form-check-label" for="SignInUBt">SingOut</label>
                             </div>
                         </div>
-    
+                        <!--SW FACE  -->
                         <div class="containersw">
                             <div class="switch-background off-shadow">
                                 <div class="innerSwitch">
@@ -71,7 +70,8 @@
                     </div>
                 </div>
             </div>
-            <!-- collapse -->
+            
+            <!-- collapse ACCORDION -->
             <div class="col-7 collapse collapse-horizontal" id="collapseWidthExample">
     
                 <aside class="lateral">
@@ -87,7 +87,7 @@
                                 data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
                                     <pre class="text-light-emphasis" id="content"></pre>
-                                    <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+                                    <canvas id="myChart" style="width:100%;max-width:560px"></canvas>
                                 </div>
                             </div>
                         </section>
